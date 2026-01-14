@@ -8,6 +8,8 @@ import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class ProductService {
 
@@ -18,6 +20,9 @@ public class ProductService {
         this.productRepository = productRepository;
     }
 
+    public List<Product> getAllProducts() {
+        return productRepository.findAll();
+    }
     @CachePut(value = PRODUCT_CACHE, key = "#result.id()")
     public ProductDto createProduct(ProductDto productDto) {
         var product = new Product();
