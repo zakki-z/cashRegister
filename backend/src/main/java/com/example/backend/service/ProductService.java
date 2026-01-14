@@ -3,28 +3,22 @@ package com.example.backend.service;
 import com.example.backend.dto.ProductDto;
 import com.example.backend.entity.Product;
 import com.example.backend.repository.ProductRepository;
-import org.springframework.cache.Cache;
-import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-
 @Service
 public class ProductService {
 
+    public static final String PRODUCT_CACHE = "products";
     private final ProductRepository productRepository;
 
     public ProductService(ProductRepository productRepository) {
         this.productRepository = productRepository;
     }
-    @Cacheable(value = "PRODUCT_CACHE",key = "#result.addAll()")
-    public List<Product> getAllProducts() {
-        return productRepository.findAll();
-    }
-    @CachePut(value = "PRODUCT_CACHE", key = "#result.id()")
+
+    @CachePut(value = PRODUCT_CACHE, key = "#result.id()")
     public ProductDto createProduct(ProductDto productDto) {
         var product = new Product();
         product.setName(productDto.name());
@@ -34,7 +28,8 @@ public class ProductService {
         return new ProductDto(savedProduct.getId(), savedProduct.getName(),
                 savedProduct.getPrice());
     }
-    @Cacheable(value = "PRODUCT_CACHE",key = "#productId")
+
+    @Cacheable(value = PRODUCT_CACHE, key = "#productId")
     public ProductDto getProduct(Long productId) {
         Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new IllegalArgumentException("Cannot find product with id " + productId));
@@ -42,7 +37,7 @@ public class ProductService {
                 product.getPrice());
     }
 
-    @CachePut(value = "PRODUCT_CACHE", key = "#result.id()")
+    @CachePut(value = PRODUCT_CACHE, key = "#result.id()")
     public ProductDto updateProduct(ProductDto productDto) {
         Long productId = productDto.id();
         Product product = productRepository.findById(productId)
@@ -55,7 +50,8 @@ public class ProductService {
         return new ProductDto(updatedProduct.getId(), updatedProduct.getName(),
                 updatedProduct.getPrice());
     }
-    @CacheEvict(value = "PRODUCT_CACHE",key = "#productId")
+
+    @CacheEvict(value = PRODUCT_CACHE, key = "#productId")
     public void deleteProduct(Long productId) {
         productRepository.deleteById(productId);
     }
