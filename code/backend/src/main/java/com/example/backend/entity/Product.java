@@ -2,7 +2,6 @@ package com.example.backend.entity;
 
 import jakarta.persistence.*;
 import lombok.Data;
-import lombok.Getter;
 
 import java.math.BigDecimal;
 
